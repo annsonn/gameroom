@@ -1,0 +1,27 @@
+{
+  "name": "gameroom",
+  "version": "0.0.0",
+  "description": "It's a game room websocket server",
+  "main": "lib/index.js",
+  "scripts": {
+    "pretest": "./node_modules/.bin/jshint",
+    "test": "./node_modules/.bin/mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/annsonn/gameroom.git"
+  },
+  "keywords": [
+    "websocket",
+    "gameroom"
+  ],
+  "author": "Anson Chung <anson.chung@gmail.com>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/annsonn/gameroom/issues"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.0",
+    "jshint": "~2.4.1"
+  }
+}
