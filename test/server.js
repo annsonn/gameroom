@@ -34,6 +34,16 @@ describe('websocket server', function() {
                 done();
             });
         });
-
     });
+
+    it('should login a user');
+    it('should create a gameroom');
+    it('should add user into an existing room');
+    it('should remove user from an existing room with many users');
+    it('should remove user from an existing room with no users, and delete it');
+    it('should disconnect user');
+    it('should disconnect user and remove user from room');
+    it('should pass message to another user');
+    it('should pass message to room');
+
 });
