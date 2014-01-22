@@ -3,6 +3,11 @@ var Server = require('http').Server,
     request = require('supertest'),
     GameRoom = require('..');
 
+var connectSocket = function(server) {
+    var addr = server.address() || server.listen().address();
+    return Client('ws://' + addr.address + ':' + addr.port);
+};
+
 describe('websocket server', function() {
     it('should attach to http server using constructor', function(done) {
         var server = new Server();
@@ -28,7 +33,7 @@ describe('websocket server', function() {
         var gameroom = new GameRoom();
 
         server.listen(function() {
-            var client = new Client(server);
+            var client = connectSocket(server);
             client.on('identity', function(data) {
                 data.should.be.an.instanceOf(String);
                 done();

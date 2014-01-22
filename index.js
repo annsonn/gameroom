@@ -6,3 +6,4 @@ var GameRoom = module.exports = function(http, opt) {
 };
 
 util.inherits(GameRoom, io);
+
