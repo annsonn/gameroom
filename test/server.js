@@ -31,14 +31,14 @@ describe('websocket server', function() {
     it('should send client identity on connection', function(done) {
         var server = new Server();
         var gameroom = new GameRoom();
-
-        server.listen(function() {
-            var client = connectSocket(server);
-            client.on('identity', function(data) {
-                data.should.be.an.instanceOf(String);
-                done();
-            });
+        gameroom.attach(server);
+        
+        var client = connectSocket(server);
+        client.on('identity', function(data) {
+            data instanceof String;
+            done();
         });
+
     });
 
     it('should login a user');
