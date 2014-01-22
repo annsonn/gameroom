@@ -1,1 +1,1 @@
-console.log('wip tests');
+require('./server');
