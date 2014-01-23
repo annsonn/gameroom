@@ -38,10 +38,24 @@ describe('websocket server', function() {
             data instanceof String;
             done();
         });
-
     });
 
-    it('should login a user');
+    it('should login a user', function(done) {
+        var server = new Server();
+        var gameroom = new GameRoom();
+        var newIdentityName = 'new id name'
+        gameroom.attach(server);        
+                
+        var client = connectSocket(server);
+        
+        client.on('identity', function(data) {            
+            if (data === newIdentityName) {                
+                done();
+            } else {
+                client.emit('login', {identity: newIdentityName});
+            }
+        });        
+    });
     it('should create a gameroom');
     it('should add user into an existing room');
     it('should remove user from an existing room with many users');
