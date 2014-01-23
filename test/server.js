@@ -48,12 +48,12 @@ describe('websocket server', function() {
                 
         var client = connectSocket(server);
         
+        client.emit('login', {identity: newIdentityName});
+        
         client.on('identity', function(data) {            
             if (data === newIdentityName) {                
                 done();
-            } else {
-                client.emit('login', {identity: newIdentityName});
-            }
+            } 
         });        
     });
     it('should create a gameroom');
