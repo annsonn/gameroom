@@ -61,7 +61,7 @@ describe('websocket server', function() {
         var gameroom = new GameRoom();
         var roomName = 'new Room Name'
         gameroom.attach(server);        
-                
+        
         var client = connectSocket(server);
         
         client.emit('create', {roomName: roomName});
@@ -72,7 +72,24 @@ describe('websocket server', function() {
             }
         });
     });
-    it('should add user into an existing room');
+    it('should add user into an existing room', function(done) {
+        var server = new Server();
+        var gameroom = new GameRoom();
+        var roomName = 'new Room Name'
+        gameroom.attach(server);        
+        
+        var client1 = connectSocket(server);
+        client1.emit('create', {roomName: roomName});
+        
+        var client2 = connectSocket(server);
+        client2.emit('join', {roomName: roomName});
+        
+        client2.on('joined', function(data) {
+            if (data.roomName === roomName) {
+                done();
+            }
+        });
+    });
     it('should remove user from an existing room with many users');
     it('should remove user from an existing room with no users, and delete it');
     it('should disconnect user');
