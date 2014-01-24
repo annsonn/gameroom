@@ -71,7 +71,7 @@ describe('websocket server', function() {
     it('should create a gameroom', function(done){
         var server = new Server();
         var gameroom = new GameRoom();
-        var roomName = 'new Room Name'
+        var roomName = 'new Room Name';
         gameroom.attach(server);
 
         var client = connectAndIdentify(server);
@@ -81,12 +81,36 @@ describe('websocket server', function() {
         client.on('joined', function(data) {
             data.player.should.equal(client.login);
             data.game.should.equal(roomName);
+            client.emit('leave');
             done();
         });
+                
     });
 
-    it('should error when creating a gameroom that already exists');
+    it('should error when creating a gameroom that already exists', function(done) {
+        var server = new Server();
+        var gameroom = new GameRoom();
+        var roomName = 'new Room Name';
+        gameroom.attach(server);
 
+        var client1 = connectAndIdentify(server);
+        var client2 = connectAndIdentify(server);
+        
+        client1.emit('create', roomName);
+
+        client1.on('joined', function(data) {
+            data.player.should.equal(client1.login);
+            data.game.should.equal(roomName);            
+            client2.emit('create', roomName);  
+        });        
+        
+        client2.on('joined', function(data) {
+            if (data.error) {                
+                done();
+            }
+        });
+    });
+    
     it('should add user into an existing room', function(done) {
         var server = new Server();
         var gameroom = new GameRoom();
@@ -102,6 +126,8 @@ describe('websocket server', function() {
         var doneWhenBothConditionsAreMet = function() {
             if (bothJoined && playerListSent) {
                 done();
+                client1.emit('leave');
+                client2.emit('leave');
             }
         };
 
@@ -132,7 +158,12 @@ describe('websocket server', function() {
             playerListSent = true;
             doneWhenBothConditionsAreMet();
         });
+        
     });
+    
+    
+
+    
 
     it('should error when joining a game that does not exist');
     it('should remove user from an existing room with many users');
