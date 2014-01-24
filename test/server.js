@@ -1,4 +1,5 @@
 var Server = require('http').Server,
+    should = require('should'),
     Client = require('socket.io-client'),
     request = require('supertest'),
     GameRoom = require('..');
@@ -32,10 +33,10 @@ describe('websocket server', function() {
         var server = new Server();
         var gameroom = new GameRoom();
         gameroom.attach(server);
-        
+
         var client = connectSocket(server);
         client.on('identity', function(data) {
-            data instanceof String;
+            data.should.be.an.instanceOf(String);
             done();
         });
     });
@@ -44,52 +45,53 @@ describe('websocket server', function() {
         var server = new Server();
         var gameroom = new GameRoom();
         var newIdentityName = 'new id name'
-        gameroom.attach(server);        
-                
+        gameroom.attach(server);
+
         var client = connectSocket(server);
-        
+
+        // Queue up the login command
         client.emit('login', {identity: newIdentityName});
-        
-        client.on('identity', function(data) {            
-            if (data === newIdentityName) {                
+
+        client.on('identity', function(data) {
+            if (data === newIdentityName) {
                 done();
-            } 
-        });        
+            }
+        });
     });
     it('should create a gameroom', function(done){
         var server = new Server();
         var gameroom = new GameRoom();
         var roomName = 'new Room Name'
-        gameroom.attach(server);        
-        
+        gameroom.attach(server);
+
         var client = connectSocket(server);
-        
-        client.emit('create', {roomName: roomName});
-        
+
+        client.emit('create', roomName);
+
         client.on('joined', function(data) {
-            if (data.roomName === roomName) {
-                done();
-            }
+            data.game.should.equal(roomName);
+            done();
         });
     });
+
     it('should add user into an existing room', function(done) {
         var server = new Server();
         var gameroom = new GameRoom();
         var roomName = 'new Room Name'
-        gameroom.attach(server);        
-        
+        gameroom.attach(server);
+
         var client1 = connectSocket(server);
-        client1.emit('create', {roomName: roomName});
-        
+        client1.emit('create', roomName);
+
         var client2 = connectSocket(server);
-        client2.emit('join', {roomName: roomName});
-        
+        client2.emit('join', roomName);
+
         client2.on('joined', function(data) {
-            if (data.roomName === roomName) {
-                done();
-            }
+            data.game.should.equal(roomName);
+            done();
         });
     });
+
     it('should remove user from an existing room with many users');
     it('should remove user from an existing room with no users, and delete it');
     it('should disconnect user');
