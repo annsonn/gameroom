@@ -43,7 +43,7 @@ describe('Server `create` Handler', function() {
         var mockedSocket = {
             emit: function(key, value) {
                 key.should.equal('joined');
-                value.should.equal('error');
+                value.should.have.property('error').and.equal('room already created');
                 done();
             }
         };
