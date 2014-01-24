@@ -9,6 +9,15 @@ var connectSocket = function(server) {
     return Client('ws://' + addr.address + ':' + addr.port);
 };
 
+// Store login
+var connectAndIdentify = function(server) {
+    var client = connectSocket(server);
+    client.on('identity', function(id) {
+        client.login = id;
+    });
+    return client;
+}
+
 describe('websocket server', function() {
     it('should attach to http server using constructor', function(done) {
         var server = new Server();
@@ -58,40 +67,74 @@ describe('websocket server', function() {
             }
         });
     });
+
     it('should create a gameroom', function(done){
         var server = new Server();
         var gameroom = new GameRoom();
         var roomName = 'new Room Name'
         gameroom.attach(server);
 
-        var client = connectSocket(server);
+        var client = connectAndIdentify(server);
 
         client.emit('create', roomName);
 
         client.on('joined', function(data) {
+            data.player.should.equal(client.login);
             data.game.should.equal(roomName);
             done();
         });
     });
+
+    it('should error when creating a gameroom that already exists');
 
     it('should add user into an existing room', function(done) {
         var server = new Server();
         var gameroom = new GameRoom();
-        var roomName = 'new Room Name'
+        var roomName = 'new Room Name';
+        var bothJoin, playerListSent;
         gameroom.attach(server);
 
-        var client1 = connectSocket(server);
+        var client1 = connectAndIdentify(server);
         client1.emit('create', roomName);
 
-        var client2 = connectSocket(server);
-        client2.emit('join', roomName);
+        var client2 = connectAndIdentify(server);
+
+        var doneWhenBothConditionsAreMet = function() {
+            if (bothJoined && playerListSent) {
+                done();
+            }
+        };
+
+        client1.on('joined', function(data) {
+            if (data.player === client1.login) {
+                // Game created. client2 can join now.
+                client2.emit('join', roomName);
+            } else {
+                data.player.should.equal(client2.login);
+                data.game.should.equal(roomName);
+                bothJoined = true;
+                doneWhenBothConditionsAreMet();
+            }
+        });
 
         client2.on('joined', function(data) {
+            data.player.should.equal(client2.login);
             data.game.should.equal(roomName);
             done();
         });
+
+        client2.on('players', function(data) {
+            data.length.should.equal(2);
+            data[0].player.should.equal(client1.login);
+            data[1].player.should.equal(client2.login);
+            data[0].game.should.equal(roomName);
+            data[1].game.should.equal(roomName);
+            playerListSent = true;
+            doneWhenBothConditionsAreMet();
+        });
     });
 
+    it('should error when joining a game that does not exist');
     it('should remove user from an existing room with many users');
     it('should remove user from an existing room with no users, and delete it');
     it('should disconnect user');
