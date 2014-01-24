@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "pretest": "./node_modules/.bin/jshint",
-    "test": "./node_modules/.bin/mocha -R spec"
+    "test": "./node_modules/.bin/cover run ./node_modules/.bin/_mocha",
+    "posttest": "./node_modules/.bin/cover report html"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "should": "~3.0.1"
   },
   "dependencies": {
-    "socket.io": "LearnBoost/socket.io"
+    "socket.io": "LearnBoost/socket.io",
+    "cover": "~0.2.9"
   }
 }

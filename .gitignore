@@ -1,5 +1,7 @@
 .idea
 
+.coverage_data/
+cover_html/
 lib-cov
 *.seed
 *.log
