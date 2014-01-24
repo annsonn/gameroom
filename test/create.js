@@ -24,7 +24,7 @@ describe('Server `create` Handler', function() {
                                 value.should.have.property('game').and.equal(roomName);
                                 value.should.have.property('player').and.equal(mockedSocket.login);
 
-                                joinedRoom.should.equal(true);                                
+                                joinedRoom.should.equal(true);
                                 done();
                             }
                         };
