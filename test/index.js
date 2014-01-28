@@ -53,7 +53,7 @@ describe('websocket server', function() {
         });
     });
 
-    it('should disconnect user and remove user from room', function(done) {
+    it.skip('should disconnect user and remove user from room', function(done) {
         var roomName = uid(),
             server = new Server(),
             gameroom = new GameRoom(server),
