@@ -11,12 +11,13 @@ describe('Server `join` handler', function() {
             broadcastedJoin = false,
             mockedSocket = {
                 login: uid(),
-                server: {
-                    join: function(name) {
-                        name.should.equal(roomName);
+                rooms: [],
+                join: function(name) {
+                    name.should.equal(roomName);
 
-                        joinedRoom = true;
-                    },
+                    joinedRoom = true;
+                },
+                server: {
                     in: function(name) {
                         name.should.equal(roomName);
 
@@ -55,7 +56,7 @@ describe('Server `join` handler', function() {
             mockedSocket = {
                 emit: function(key, value) {
                     key.should.equal('joined');
-                    value.should.equal('error');
+                    value.should.have.property('error').and.equal('room does not exist');
 
                     done();
                 }
@@ -63,5 +64,7 @@ describe('Server `join` handler', function() {
 
         join.call(mockedSocket, roomName);
     });
-    
+
+    it('should leave current room to join another');
+
 });
