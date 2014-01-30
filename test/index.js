@@ -57,7 +57,7 @@ describe('websocket server', function() {
         var roomName = uid(),
             server = new Server(),
             gameroom = new GameRoom(server),
-            client1 = connectSocket(server);
+            client1 = connectSocket(server),
             client2 = connectSocket(server);
 
         client1.emit('create', roomName);
