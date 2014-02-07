@@ -56,17 +56,21 @@ describe('websocket server', function() {
     it.skip('should disconnect user and remove user from room', function(done) {
         var roomName = uid(),
             server = new Server(),
-            gameroom = new GameRoom(server),
-            client1 = connectSocket(server),
+            gameroom = new GameRoom();
+        
+        gameroom.attach(server);
+        var client1 = connectSocket(server),
             client2 = connectSocket(server);
-
+        
         client1.emit('create', roomName);
 
         client1.on('joined', function(data) {
+            console.log('client1 joined');
             client2.emit('join', roomName);
         });
 
         client2.on('joined', function(data) {
+            console.log('client2 joined');
             client2.disconnect();
         });
 

@@ -14,7 +14,7 @@ describe('Server `create` Handler', function() {
                     room.should.equal(roomName);
 
                     joinedRoom = true;
-                    fn.call(this);
+                    fn();
                 }, 
                 in: function(name) {
                     name.should.equal(roomName);

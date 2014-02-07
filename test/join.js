@@ -16,7 +16,7 @@ describe('Server `join` handler', function() {
                     name.should.equal(roomName);
 
                     joinedRoom = true;
-                    fn.call(this);
+                    fn();
                 },
                 in: function(name) {
                     name.should.equal(roomName);
