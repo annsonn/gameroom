@@ -12,25 +12,25 @@ describe('Server `join` handler', function() {
             mockedSocket = {
                 login: uid(),
                 rooms: [],
-                join: function(name) {
+                join: function(name, fn) {
                     name.should.equal(roomName);
 
                     joinedRoom = true;
+                    fn.call(this);
                 },
-                server: {
-                    in: function(name) {
-                        name.should.equal(roomName);
+                in: function(name) {
+                    name.should.equal(roomName);
 
-                        return {
-                            emit: function(key, value) {
-                                key.should.equal('joined');
-                                value.should.have.property('game').and.equal(roomName);
-                                value.should.have.property('player').and.equal(mockedSocket.login);
+                    return {
+                        emit: function(key, value) {
+                            key.should.equal('joined');
+                            value.should.have.property('game').and.equal(roomName);
+                            value.should.have.property('player').and.equal(mockedSocket.login);
 
-                                broadcastedJoin = true;
-                            }
-                        };
-                    }
+                            broadcastedJoin = true;
+                        }
+                    };
+                    
                 },
                 emit: function(key, value) {
                     key.should.equal('players');

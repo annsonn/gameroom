@@ -10,26 +10,26 @@ describe('Server `create` Handler', function() {
             joinedRoom = false,
             mockedSocket = {
                 login: uid(7),
-                join: function(key, value) {
-                    key.should.equal(roomName);
+                join: function(room, fn) {
+                    room.should.equal(roomName);
 
                     joinedRoom = true;
-                },
-                server: {
-                    in: function(name) {
-                        name.should.equal(roomName);
-                        return {
-                            emit: function(key, value) {
-                                key.should.equal('joined');
-                                value.should.have.property('game').and.equal(roomName);
-                                value.should.have.property('player').and.equal(mockedSocket.login);
+                    fn.call(this);
+                }, 
+                in: function(name) {
+                    name.should.equal(roomName);
+                    return {
+                        emit: function(key, value) {
+                            key.should.equal('joined');
+                            value.should.have.property('game').and.equal(roomName);
+                            value.should.have.property('player').and.equal(mockedSocket.login);
 
-                                joinedRoom.should.equal(true);
-                                done();
-                            }
-                        };
-                    }
+                            joinedRoom.should.equal(true);
+                            done();
+                        }
+                    };
                 }
+                
             };
 
             create.call(mockedSocket, roomName);
