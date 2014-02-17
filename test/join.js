@@ -2,13 +2,14 @@ var Server = require('http').Server,
     should = require('should'),
     uid = require('uid'),
     connectSocket = require('./common').connectSocket,
+    mockOptions = require('./common').mockOptions,
     GameRoom = require('..');
 
 describe('Server `join` handler', function() {
 
     it('should add user to existing game', function(done) {
          var server = new Server(),
-            gameroom = new GameRoom(server),
+            gameroom = new GameRoom(server, mockOptions),
             roomName = uid();
         
         var client1 = connectSocket(server, { multiplex: false }),
@@ -26,7 +27,7 @@ describe('Server `join` handler', function() {
 
     it('should error when joining a non existing game', function(done) {
          var server = new Server(),
-            gameroom = new GameRoom(server),
+            gameroom = new GameRoom(server, mockOptions),
             roomName = uid();
         
         var client = connectSocket(server);
