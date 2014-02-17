@@ -1,47 +1,27 @@
-var should = require('should'),
+var Server = require('http').Server,
+    should = require('should'),
     uid = require('uid'),
-    leave = require('../lib/leave');
+    connectSocket = require('./common').connectSocket,
+    GameRoom = require('..');
 
 describe('Server `leave` handler', function() {
 
     it.skip('should remove user from room', function(done) {
-        var broadcastedToRoom = false,
-            mockedSocket = {
-                login: uid(),
-                room: uid(),
-                server: {
-                    in: function(roomName) {
-                        roomName.should.equal(mockedSocket.room);
+        var server = new Server(),
+            gameroom = new GameRoom(server),
+            roomName = uid();
 
-                        return {
-                            emit: function(key, value) {
-                                key.should.equal('left');
-                                value.should.have.property('player').and.equal(mockedSocket.login);
-                                value.should.have.property('game').and.equal(mockedSocket.room);
-                                value.should.have.property('action').and.equal('leave');
+        var client1 = connectSocket(server, { multiplex: false }),
+            client2 = connectSocket(server, { multiplex: false });
+        
+        client1.emit('create', roomName, function() {
 
-                                broadcastedToRoom = true;
-                            }
-                        };
-                    }
-
-                },
-                leaveAll: function() {
-                    broadcastedToRoom.should.equal(true);
-                    done();
-                }
-        };
-
-        leave.call(mockedSocket);
-    });
-
-    it.skip('should error when user is not in a room', function(done) {
-        var mockedSocket = {
-            emit: function(key, value) {
-                key.should.equal('left');
-                value.should.have.property('error').and.equal('player not in room');
-            }
-        };
+            client2.emit('join', roomName, function() {
+                
+                client2.emit('leave', roomName, done);    // Cannot validate
+            });
+        });
+        
     });
 
 });

@@ -1,70 +1,40 @@
-var should = require('should'),
+var Server = require('http').Server,
+    should = require('should'),
     uid = require('uid'),
-    games = require('../lib/games'),
-    join = require('../lib/join');
+    connectSocket = require('./common').connectSocket,
+    GameRoom = require('..');
 
 describe('Server `join` handler', function() {
 
     it('should add user to existing game', function(done) {
-        var roomName = uid(),
-            joinedRoom = false,
-            broadcastedJoin = false,
-            mockedSocket = {
-                login: uid(),
-                rooms: [],
-                join: function(name, fn) {
-                    name.should.equal(roomName);
-
-                    joinedRoom = true;
-                    fn();
-                },
-                in: function(name) {
-                    name.should.equal(roomName);
-
-                    return {
-                        emit: function(key, value) {
-                            key.should.equal('joined');
-                            value.should.have.property('game').and.equal(roomName);
-                            value.should.have.property('player').and.equal(mockedSocket.login);
-
-                            broadcastedJoin = true;
-                        }
-                    };
-                    
-                },
-                emit: function(key, value) {
-                    key.should.equal('players');
-                    value.should.be.an.instanceOf(Array);
-                    value.should.have.property('length').and.equal(1);
-                    value[0].game.should.equal(roomName);
-                    value[0].player.should.equal(mockedSocket.login);
-
-                    joinedRoom.should.equal(true);
-                    broadcastedJoin.should.equal(true);
-
-                    done();
-                }
-            };
-
-        games[roomName] = [];
-
-        join.call(mockedSocket, roomName);
+         var server = new Server(),
+            gameroom = new GameRoom(server),
+            roomName = uid();
+        
+        var client1 = connectSocket(server, { multiplex: false }),
+            client2 = connectSocket(server, { multiplex: false });
+        
+        client1.emit('create', roomName, function() {
+            gameroom.sockets.sockets[0].rooms.indexOf(roomName).should.equal(1);
+            
+            client2.emit('join', roomName, function(err, playerList) {
+                playerList.length.should.equal(2);
+                done();
+            });
+        });
     });
 
     it('should error when joining a non existing game', function(done) {
-        var roomName = uid(),
-            mockedSocket = {
-                emit: function(key, value) {
-                    key.should.equal('joined');
-                    value.should.have.property('error').and.equal('room does not exist');
-
-                    done();
-                }
-            };
-
-        join.call(mockedSocket, roomName);
+         var server = new Server(),
+            gameroom = new GameRoom(server),
+            roomName = uid();
+        
+        var client = connectSocket(server);
+        
+        client.emit('join', roomName, function(err) {
+            err.should.have.property('error').and.equal('room does not exist');
+            done();
+        });
     });
-
-    it('should leave current room to join another');
 
 });

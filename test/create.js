@@ -1,54 +1,39 @@
-var should = require('should'),
+var Server = require('http').Server,
+    should = require('should'),
     uid = require('uid'),
-    games = require('../lib/games'),
-    create = require('../lib/create');
+    connectSocket = require('./common').connectSocket,
+    GameRoom = require('..');
 
 describe('Server `create` Handler', function() {
 
-    it('should create a new game', function(done) {
-        var roomName = uid(),
-            joinedRoom = false,
-            mockedSocket = {
-                login: uid(7),
-                join: function(room, fn) {
-                    room.should.equal(roomName);
+    it('should create room and callback', function(done) {
+        var server = new Server(),
+            gameroom = new GameRoom(server),
+            roomName = uid();
 
-                    joinedRoom = true;
-                    fn();
-                }, 
-                in: function(name) {
-                    name.should.equal(roomName);
-                    return {
-                        emit: function(key, value) {
-                            key.should.equal('joined');
-                            value.should.have.property('game').and.equal(roomName);
-                            value.should.have.property('player').and.equal(mockedSocket.login);
-
-                            joinedRoom.should.equal(true);
-                            done();
-                        }
-                    };
-                }
-                
-            };
-
-            create.call(mockedSocket, roomName);
+        var client = connectSocket(server);
+        
+        client.emit('create', roomName, function() {
+            gameroom.sockets.sockets[0].rooms.indexOf(roomName).should.equal(1);
+            done();
+        });
     });
-
+    
     it('should error when creating an existing game', function(done) {
-        var roomName = uid();
+        var server = new Server(),
+            gameroom = new GameRoom(server),
+            roomName = uid();
 
-        games[roomName] = 'exists';
-
-        var mockedSocket = {
-            emit: function(key, value) {
-                key.should.equal('joined');
-                value.should.have.property('error').and.equal('room already created');
+        var client = connectSocket(server);
+        
+        client.emit('create', roomName, function() {
+            
+            // Create again!
+            client.emit('create', roomName, function(err) {
+                err.should.have.property('error').and.equal('room already created');
                 done();
-            }
-        };
-
-        create.call(mockedSocket, roomName);
+            });
+        });
     });
 
 });

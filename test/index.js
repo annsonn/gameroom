@@ -3,23 +3,8 @@ var Server = require('http').Server,
     uid = require('uid'),
     Client = require('socket.io-client'),
     request = require('supertest'),
+    connectSocket = require('./common').connectSocket,
     GameRoom = require('..');
-
-var connectSocket = function(server) {
-    var addr = server.address() || server.listen().address();
-
-    return Client('ws://' + addr.address + ':' + addr.port);
-};
-
-// Store login
-var connectAndIdentify = function(server) {
-    var client = connectSocket(server);
-
-    client.on('identity', function(id) {
-        client.login = id;
-    });
-    return client;
-};
 
 describe('websocket server', function() {
     it('should attach to http server using constructor', function(done) {
@@ -56,28 +41,21 @@ describe('websocket server', function() {
     it.skip('should disconnect user and remove user from room', function(done) {
         var roomName = uid(),
             server = new Server(),
-            gameroom = new GameRoom();
+            gameroom = new GameRoom(server);
         
-        gameroom.attach(server);
-        var client1 = connectSocket(server),
-            client2 = connectSocket(server);
+        var client1 = connectSocket(server, { multiplex: false }),
+            client2 = connectSocket(server, { multiplex: false });
         
-        client1.emit('create', roomName);
+        client1.emit('create', roomName, function() {
+            client2.emit('join', roomName, function() {
+                gameroom.in(roomName).sockets.length.should.equal(2);
 
-        client1.on('joined', function(data) {
-            console.log('client1 joined');
-            client2.emit('join', roomName);
+                client2.disconnect();
+            });
         });
-
-        client2.on('joined', function(data) {
-            console.log('client2 joined');
-            client2.disconnect();
-        });
-
-        client2.on('disconnect', function() {
-            gameroom.of(roomName).sockets.length.should.equal(1);
-            done();
-        });
+        
+        client2.on('disconnect', done);    // Cannot validate
+        
     });
 
 });

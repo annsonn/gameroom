@@ -3,7 +3,7 @@ var uid = require('uid'),
 
 describe('Server `message` handler', function() {
 
-    it('should pass message to logged in player');
+    it.skip('should pass message to logged in player');
 
     it.skip('should error when target player does not exist', function(done) {
         var playerName = uid(),
