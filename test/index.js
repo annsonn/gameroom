@@ -3,6 +3,7 @@ var Server = require('http').Server,
     uid = require('uid'),
     Client = require('socket.io-client'),
     request = require('supertest'),
+    keyJoin = require('../lib/common').keyJoin,
     connectSocket = require('./common').connectSocket,
     mockOptions = require('./common').mockOptions,
     GameRoom = require('..');
@@ -38,14 +39,21 @@ describe('websocket server', function() {
         
         client1.emit('create', roomName, function() {
             client2.emit('join', roomName, function() {
-                gameroom.in(roomName).sockets.length.should.equal(2);
-
-                client2.disconnect();
+                gameroom.cmd.smembers(keyJoin('rooms', roomName, 'sockets'), function(err, sockets) {
+                    console.log(sockets);
+                    sockets.length.should.equal(2);
+                    client2.disconnect();
+                });                
             });
         });
         
-        client2.on('disconnect', done);    // Cannot validate
-        
+        setTimeout(function() {
+            gameroom.cmd.smembers(keyJoin('rooms', roomName, 'sockets'), function(err, sockets) {
+                console.log(sockets);
+                sockets.length.should.equal(1);
+                done();
+            });
+        }, 500);
     });
 
 });
