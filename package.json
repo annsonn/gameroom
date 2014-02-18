@@ -27,7 +27,8 @@
     "socket.io-client": "LearnBoost/socket.io-client",
     "supertest": "~0.9.0",
     "should": "~3.0.1",
-    "node-redis-mock": "~0.2.11"
+    "node-redis-mock": "~0.2.11",
+    "express": "~3.4.8"
   },
   "dependencies": {
     "socket.io": "LearnBoost/socket.io",
