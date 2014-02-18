@@ -1,6 +1,7 @@
 var Server = require('http').Server,
     should = require('should'),
     uid = require('uid'),
+    express = require('express'),
     Client = require('socket.io-client'),
     request = require('supertest'),
     keyJoin = require('../lib/common').keyJoin,
@@ -30,13 +31,20 @@ describe('websocket server', function() {
     });
 
     it('should integrate with express', function(done) {
-        var app = require('express')();
+        var app = express();
             server = new Server(app),
             gameroom = new GameRoom(server, mockOptions);
 
-        request(server)
-            .get('/socket.io/socket.io.js')
-            .expect(200, done);
+        app.use(app.router);
+
+        app.get('/', function(req, res) {
+            res.send('OK');
+        });
+
+        request(app)
+            .get('/')
+            .expect(200)
+            .expect('OK', done);
     });
 
     it.skip('should disconnect user and remove user from room', function(done) {
