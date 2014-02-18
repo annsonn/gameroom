@@ -1,9 +1,9 @@
 var Server = require('http').Server,
     should = require('should'),
     uid = require('uid'),
-    connectSocket = require('./common').connectSocket,
-    mockOptions = require('./common').mockOptions,
-    GameRoom = require('..');
+    connectSocket = require('../common').connectSocket,
+    mockOptions = require('../common').mockOptions,
+    GameRoom = require('../..');
 
 describe('Server `create` Handler', function() {
 

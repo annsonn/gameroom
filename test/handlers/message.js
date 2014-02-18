@@ -1,5 +1,5 @@
-var uid = require('uid'),
-    message = require('../lib/message');
+var uid = require('uid');
+    //message = require('../../lib/message');
 
 describe('Server `message` handler', function() {
 

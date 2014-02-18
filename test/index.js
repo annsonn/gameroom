@@ -49,3 +49,9 @@ describe('websocket server', function() {
     });
 
 });
+
+require('./handlers/create');
+require('./handlers/join');
+require('./handlers/leave');
+require('./handlers/login');
+require('./handlers/message');
