@@ -9,7 +9,7 @@ describe('Server `login` handler', function() {
 
     it('should change socket login', function(done) {
         var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions);
+            gameroom = new GameRoom(server, mockOptions());
         
         var client = connectSocket(server);
         

@@ -21,7 +21,7 @@ describe('websocket server', function() {
 
     it('should send client identity on connection', function(done) {
         var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions),
+            gameroom = new GameRoom(server, mockOptions()),
             client = connectSocket(server);
 
         client.on('identity', function(data) {
@@ -31,26 +31,30 @@ describe('websocket server', function() {
     });
 
     it('should integrate with express', function(done) {
-        var app = express();
+        var app = express(),
             server = new Server(app),
-            gameroom = new GameRoom(server, mockOptions);
-
+            gameroom = new GameRoom(server, mockOptions());
+        
         app.use(app.router);
-
+        
         app.get('/', function(req, res) {
-            res.send('OK');
+            res.end('OK');
         });
 
-        request(app)
-            .get('/')
-            .expect(200)
-            .expect('OK', done);
+        request(server)
+            .get('/socket.io/socket.io.js')
+            .expect(200, function() {
+                request(server)
+                    .get('/')
+                    .expect(200)
+                    .expect('OK', done);
+            });
     });
-
-    it.skip('should disconnect user and remove user from room', function(done) {
+    
+    it('should disconnect user and remove user from room', function(done) {
         var roomName = uid(),
             server = new Server(),
-            gameroom = new GameRoom(server, mockOptions);
+            gameroom = new GameRoom(server, mockOptions());
 
         var client1 = connectSocket(server, { multiplex: false }),
             client2 = connectSocket(server, { multiplex: false });
@@ -58,7 +62,6 @@ describe('websocket server', function() {
         client1.emit('create', roomName, function() {
             client2.emit('join', roomName, function() {
                 gameroom.cmd.smembers(keyJoin('rooms', roomName, 'sockets'), function(err, sockets) {
-                    console.log(sockets);
                     sockets.length.should.equal(2);
                     client2.disconnect();
                 });
@@ -67,11 +70,10 @@ describe('websocket server', function() {
 
         setTimeout(function() {
             gameroom.cmd.smembers(keyJoin('rooms', roomName, 'sockets'), function(err, sockets) {
-                console.log(sockets);
                 sockets.length.should.equal(1);
                 done();
             });
-        }, 500);
+        }, 200);
     });
 
 });

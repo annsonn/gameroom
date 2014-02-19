@@ -10,7 +10,7 @@ describe('Server `message` handler', function() {
 
     it('should pass message to logged in player', function(done) {
          var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions);
+            gameroom = new GameRoom(server, mockOptions());
         
         var client1 = connectSocketAndIdentify(server, { multiplex: false }),
             client2 = connectSocket(server, { multiplex: false });
@@ -34,7 +34,7 @@ describe('Server `message` handler', function() {
 
     it('should pass message to room', function(done) {
          var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions),
+            gameroom = new GameRoom(server, mockOptions()),
             roomName = uid();
         
         var client1 = connectSocketAndIdentify(server, { multiplex: false }),
@@ -55,8 +55,8 @@ describe('Server `message` handler', function() {
     it('should pass message to player in different server', function(done) {
         var server1 = new Server(),
             server2 = new Server(),
-            gameroom1 = new GameRoom(server1, mockOptions),
-            gameroom2 = new GameRoom(server2, mockOptions),
+            gameroom1 = new GameRoom(server1, mockOptions()),
+            gameroom2 = new GameRoom(server2, mockOptions()),
             roomName = uid();
         
         var client1 = connectSocketAndIdentify(server1, { multiplex: false }),

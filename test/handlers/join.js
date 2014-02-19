@@ -9,7 +9,7 @@ describe('Server `join` handler', function() {
 
     it('should add user to existing game', function(done) {
          var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions),
+            gameroom = new GameRoom(server, mockOptions()),
             roomName = uid();
         
         var client1 = connectSocket(server, { multiplex: false }),
