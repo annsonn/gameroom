@@ -9,7 +9,7 @@ describe('Server `create` Handler', function() {
 
     it('should create room and callback', function(done) {
         var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions),
+            gameroom = new GameRoom(server, mockOptions()),
             roomName = uid();
 
         var client = connectSocket(server);
@@ -22,7 +22,7 @@ describe('Server `create` Handler', function() {
     
     it('should error when creating an existing game', function(done) {
         var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions),
+            gameroom = new GameRoom(server, mockOptions()),
             roomName = uid();
 
         var client = connectSocket(server);

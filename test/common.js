@@ -1,4 +1,5 @@
 var Client = require('socket.io-client'),
+    merge = require('merge'),
     redis = require('node-redis-mock').createClient();
 
 exports.connectSocket = function(server, opts) {
@@ -17,8 +18,10 @@ exports.connectSocketAndIdentify = function(server, opts) {
     return client;
 };
 
-exports.mockOptions = {
-    pub: redis,
-    sub: redis,
-    cmd: redis
+exports.mockOptions = function(extra) {
+    return merge({
+        pub: redis,
+        sub: redis,
+        cmd: redis
+    }, extra);
 };

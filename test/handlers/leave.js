@@ -10,7 +10,7 @@ describe('Server `leave` handler', function() {
 
     it('should remove user from room', function(done) {
         var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions),
+            gameroom = new GameRoom(server, mockOptions()),
             roomName = uid();
 
         var client1 = connectSocket(server, { multiplex: false }),
