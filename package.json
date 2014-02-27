@@ -1,6 +1,6 @@
 {
   "name": "gameroom",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "It's a game room websocket server",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,10 @@
   "bugs": {
     "url": "https://github.com/annsonn/gameroom/issues"
   },
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "devDependencies": {
     "mocha": "~1.17.0",
     "jshint": "~2.4.1",

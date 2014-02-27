@@ -12,7 +12,7 @@ var Server = require('http').Server,
 describe('websocket server', function() {
     it('should attach to http server using constructor', function(done) {
         var server = new Server(),
-            gameroom = new GameRoom(server, mockOptions);
+            gameroom = new GameRoom(server, mockOptions());
 
         request(server)
             .get('/socket.io/socket.io.js')
@@ -34,9 +34,9 @@ describe('websocket server', function() {
         var app = express(),
             server = new Server(app),
             gameroom = new GameRoom(server, mockOptions());
-        
+
         app.use(app.router);
-        
+
         app.get('/', function(req, res) {
             res.end('OK');
         });
@@ -50,7 +50,7 @@ describe('websocket server', function() {
                     .expect('OK', done);
             });
     });
-    
+
     it('should disconnect user and remove user from room', function(done) {
         var roomName = uid(),
             server = new Server(),
