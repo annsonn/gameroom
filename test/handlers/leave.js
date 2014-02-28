@@ -15,7 +15,7 @@ describe('Server `leave` handler', function() {
 
         var client1 = connectSocket(server, { multiplex: false }),
             client2 = connectSocket(server, { multiplex: false });
-        
+
         client1.emit('create', roomName, function() {
             client2.emit('join', roomName, function() {
                 client2.emit('leave', roomName, function() {
@@ -26,7 +26,7 @@ describe('Server `leave` handler', function() {
                 });    // client 2 leave
             });    // client 2 join
         });    // client 1 create
-        
+
     });
 
 });
